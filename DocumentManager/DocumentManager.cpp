@@ -92,16 +92,23 @@ enum SynchronousDirection
 
 void DocumentLibrary::Synchronous(DocumentLibrary & lib)
 {
+	auto find_in_map = [](const std::string& str, const std::map<std::string, long long>& m)->long long {
+		auto iter = m.find(str);
+		if (iter == m.end())
+			return 0;
+		else
+			return iter->second;
+	};
 	std::vector<std::pair<std::string, SynchronousDirection>> change_list;
 	for (auto& i : m_FileInformations)
 	{
-		if (i.second != lib.m_FileInformations[i.first] && (std::filesystem::directory_entry(m_RootPath / std::filesystem::path(i.first)).is_directory() == false))
-			change_list.push_back(std::make_pair(i.first, (i.second > lib.m_FileInformations[i.first] ? ToDestination : FromDestination)));
+		if (i.second != find_in_map(i.first, lib.m_FileInformations) && (std::filesystem::directory_entry(m_RootPath / std::filesystem::path(i.first)).is_directory() == false))
+			change_list.push_back(std::make_pair(i.first, (i.second > find_in_map(i.first, lib.m_FileInformations) ? ToDestination : FromDestination)));
 	}
 	for (auto& i : lib.m_FileInformations)
 	{
-		if (i.second != m_FileInformations[i.first] && (std::filesystem::directory_entry(lib.m_RootPath / std::filesystem::path(i.first)).is_directory() == false))
-			change_list.push_back(std::make_pair(i.first, (i.second > m_FileInformations[i.first] ? FromDestination : ToDestination)));
+		if (i.second != find_in_map(i.first, m_FileInformations) && (std::filesystem::directory_entry(lib.m_RootPath / std::filesystem::path(i.first)).is_directory() == false))
+			change_list.push_back(std::make_pair(i.first, (i.second > find_in_map(i.first, m_FileInformations) ? FromDestination : ToDestination)));
 	}
 
 	//interactive begin
