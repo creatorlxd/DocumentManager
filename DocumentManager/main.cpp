@@ -4,6 +4,7 @@
 
 int main(int argc, char * argv[])
 {
+	setlocale(LC_ALL, "zh-cn.UTF-8");
 	if (argc == 1)
 	{
 		//visual mode
